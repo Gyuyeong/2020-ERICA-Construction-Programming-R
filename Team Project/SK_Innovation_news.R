@@ -23,7 +23,10 @@ parse_price <- function(s) {
   s <- as.integer(s)
   return (s)
 }
+
 # -------------------------------------
+
+Sys.Date()
 
 # SK 이노베이션 사이트 URL
 url <- "http://www.skinnovation.com/company/press.asp"
@@ -97,6 +100,51 @@ for (k in 4:9) {
   nextbutton <- remDr$findElement(using="xpath", str_c('//*[@id="contents"]/div/div[3]/div[2]/a[', k, ']'))
   nextbutton$clickElement()
 }
+
+google_url <- "https://www.google.com/"
+
+remDr$navigate(google_url)
+searchElem <- remDr$findElement(using="xpath", '//*[@id="tsf"]/div[2]/div[1]/div[1]/div/div[2]/input')
+searchElem$sendKeysToElement(list("SK이노베이션", key="enter"))
+
+newsbutton <- remDr$findElement(using="xpath", '//*[@id="hdtb-msb-vis"]/div[2]/a')
+newsbutton$clickElement()
+
+headlines <- c()
+news_dates <- c()
+
+for (num in 1:24) {
+  if (num %% 10 == 0) {
+    Sys.sleep(2)
+  }
+  html <- remDr$getPageSource()[[1]]
+  
+  search_results <- html %>%
+    read_html() %>%
+    html_nodes("div.g")
+  
+  headline <- search_results %>%
+    html_nodes("a.l.lLrAF") %>%
+    html_text()
+  
+  for (i in 1:length(search_results)) {
+    ndate <- search_results[i] %>%
+      html_nodes("span.f.nsa.fwzPFf")
+    
+    news_date <- ndate[1] %>%
+      html_text()
+    
+    news_dates <- c(news_dates, news_date)
+  }
+  
+  headlines <- c(headlines, headline)
+  if (num != 24) {
+    nbutton <- remDr$findElement(using="xpath", '//*[@id="pnnext"]')
+    nbutton$clickElement()
+  }
+}
+
+google_news <- data.frame(news_dates, headlines)
 
 # 뉴스 dataframe 생성 및 저장
 SK_news <- data.frame(dates, titles)
