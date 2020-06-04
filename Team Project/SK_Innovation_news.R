@@ -200,3 +200,4 @@ df <- merge(SK_news, stock_df, by="dates" , all=T)
 
 # csv颇老 积己
 write.csv(df, file="SK捞畴海捞记.csv", row.names=F)
+write.csv(google_news, file="google_news.csv", row.names=F)
