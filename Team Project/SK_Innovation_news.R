@@ -1,32 +1,8 @@
 library(httr)
 library(rvest)
 library(stringr)
-library(KoNLP)
 library(RSelenium)
-
-# helper method
-# --------------------------------------
-parse_string <- function(s) {
-  s <- str_replace_all(s, "[\t\n]", "")
-  s <- str_replace(s, "^\\s+", "")
-  return (s)
-}
-
-parse_date <- function(s) {
-  s <- str_replace_all(s, "\\.", "-")
-  s <- as.character(s)
-  return (s)
-}
-
-parse_price <- function(s) {
-  s <- str_replace_all(s, ",", "")
-  s <- as.integer(s)
-  return (s)
-}
-
-# -------------------------------------
-
-Sys.Date()
+source("parse_lib.R")
 
 # SK 이노베이션 사이트 URL
 url <- "http://www.skinnovation.com/company/press.asp"
@@ -113,7 +89,7 @@ newsbutton$clickElement()
 headlines <- c()
 news_dates <- c()
 
-for (num in 1:24) {
+for (num in 1:20) {
   if (num %% 10 == 0) {
     Sys.sleep(2)
   }
@@ -138,7 +114,7 @@ for (num in 1:24) {
   }
   
   headlines <- c(headlines, headline)
-  if (num != 24) {
+  if (num != 20) {
     nbutton <- remDr$findElement(using="xpath", '//*[@id="pnnext"]')
     nbutton$clickElement()
   }
